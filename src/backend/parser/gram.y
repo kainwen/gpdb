@@ -728,7 +728,7 @@ static Node *makeIsNotDistinctFromNode(Node *expr, int position);
 
 	NEWLINE NOCREATEEXTTABLE NOOVERCOMMIT
 
-	ORDERED OTHERS OVERCOMMIT
+	ONLYMASTER ORDERED OTHERS OVERCOMMIT
 
 	PARTITIONS PERCENT PROTOCOL
 
@@ -4819,6 +4819,14 @@ DistributedBy:   DISTRIBUTED BY  '(' distributed_by_list ')'
 			{
 				DistributedBy *distributedBy = makeNode(DistributedBy);
 				distributedBy->ptype = POLICYTYPE_REPLICATED;
+				distributedBy->numsegments = -1;
+				distributedBy->keyCols = NIL;
+				$$ = (Node *)distributedBy;
+			}
+			| DISTRIBUTED ONLYMASTER
+			{
+				DistributedBy *distributedBy = makeNode(DistributedBy);
+				distributedBy->ptype = POLICYTYPE_ENTRY;
 				distributedBy->numsegments = -1;
 				distributedBy->keyCols = NIL;
 				$$ = (Node *)distributedBy;
@@ -15723,6 +15731,7 @@ unreserved_keyword:
 			| OF
 			| OFF
 			| OIDS
+			| ONLYMASTER
 			| OPERATOR
 			| OPTION
 			| OPTIONS

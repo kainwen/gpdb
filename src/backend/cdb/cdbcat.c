@@ -114,6 +114,12 @@ createRandomPartitionedPolicy(int numsegments)
 	return makeGpPolicy(POLICYTYPE_PARTITIONED, 0, numsegments);
 }
 
+GpPolicy *
+createEntryPolicy(void)
+{
+	return makeGpPolicy(POLICYTYPE_ENTRY, 0, getgpsegmentCount());
+}
+
 /*
  * createHashPartitionedPolicy-- Create a policy with data
  * partitioned by keys 
@@ -358,6 +364,9 @@ GpPolicyFetch(Oid tbloid)
 			case SYM_POLICYTYPE_REPLICATED:
 				policy = createReplicatedGpPolicy(policyform->numsegments);
 				break;
+		    case SYM_POLICYTYPE_ENTRY:
+				policy = createEntryPolicy();
+				break;
 			case SYM_POLICYTYPE_PARTITIONED:
 				/*
 				 * Get the attributes on which to partition.
@@ -428,8 +437,6 @@ GpPolicyStore(Oid tbloid, const GpPolicy *policy)
 	int			i;
 
 	/* Sanity check the policy and its opclasses before storing it. */
-	if (policy->ptype == POLICYTYPE_ENTRY)
-		elog(ERROR, "cannot store entry-type policy in gp_distribution_policy");
 	for (i = 0; i < policy->nattrs; i++)
 	{
 		if (policy->opclasses[i] == InvalidOid)
@@ -452,6 +459,10 @@ GpPolicyStore(Oid tbloid, const GpPolicy *policy)
 	if (GpPolicyIsReplicated(policy))
 	{
 		values[1] = CharGetDatum(SYM_POLICYTYPE_REPLICATED);
+	}
+	else if (GpPolicyIsEntry(policy))
+	{
+		values[1] = CharGetDatum(SYM_POLICYTYPE_ENTRY);
 	}
 	else
 	{

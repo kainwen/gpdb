@@ -60,6 +60,7 @@ typedef FormData_gp_policy *Form_gp_policy;
  */
 #define SYM_POLICYTYPE_PARTITIONED 'p'
 #define SYM_POLICYTYPE_REPLICATED 'r'
+#define SYM_POLICYTYPE_ENTRY 'e'
 
 /*
  * A magic number, setting GpPolicy.numsegments to this value will cause a
@@ -174,6 +175,7 @@ extern GpPolicy *makeGpPolicy(GpPolicyType ptype, int nattrs, int numsegments);
 extern GpPolicy *createReplicatedGpPolicy(int numsegments);
 extern GpPolicy *createRandomPartitionedPolicy(int numsegments);
 extern GpPolicy *createHashPartitionedPolicy(List *keys, List *opclasses, int numsegments);
+extern GpPolicy *createEntryPolicy(void);
 
 extern bool IsReplicatedTable(Oid relid);
 
